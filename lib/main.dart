@@ -2,6 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+/// Manejador para recibir mensajes de Firebase Cloud Messaging (FCM).
+/// 
+/// Esta función asíncrona se invoca al recibir un mensaje de FCM.
+/// Inicializa Firebase y luego imprime el título del mensaje recibido en la consola.
+Future<void> _firebaseMessangingHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print("Estoy capturando el mensaje: ${message.notification!.title}");
+}
+
+/// Configuración específica de notificaciones para Android.
+/// 
+/// Utiliza el icono predeterminado de la app para mostrar las notificaciones en dispositivos Android.
+const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launch');
+
+/// Configuración específica de notificaciones para iOS (Darwin).
+final DarwinInitializationSettings initializationSettingsDarwin =
+    DarwinInitializationSettings();
+
+/// Configuración general de inicialización de notificaciones.
+/// 
+/// Incluye las configuraciones para Android e iOS, necesarias para mostrar notificaciones en ambas plataformas.
+final InitializationSettings initializationSettings = InitializationSettings(
+  android: initializationSettingsAndroid,
+  iOS: initializationSettingsDarwin,
+);
+
+/// Punto de entrada principal de la aplicación.
+/// 
+/// Se asegura de inicializar los Widgets de Flutter, inicializa Firebase y luego ejecuta la aplicación.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -10,10 +45,15 @@ void main() async {
   runApp(const MyApp());
 }
 
+/// Clase principal de la aplicación.
+/// 
+/// Define la estructura básica de la interfaz de usuario, incluyendo el tema y la página principal.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  /// Construye y retorna el widget raíz de la aplicación.
+  /// 
+  /// Configura el título y tema de la aplicación, y define la página principal.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
